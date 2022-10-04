@@ -138,7 +138,11 @@ fn compile_zstd() {
 
     config.define("ZSTD_LIB_DEPRECATED", Some("0"));
 
-    config.flag_if_supported("-flto=thin");
+    if !config.get_compiler().is_like_gnu() {
+        // gcc has a -flto but not -flto=thin
+        // Apparently this is causing crashes on windows-gnu?
+        config.flag_if_supported("-flto=thin");
+    }
 
     #[cfg(feature = "thin")]
     {
